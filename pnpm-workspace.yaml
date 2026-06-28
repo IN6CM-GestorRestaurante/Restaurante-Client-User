@@ -1,0 +1,2 @@
+patchedDependencies:
+  zustand: patches/zustand.patch
