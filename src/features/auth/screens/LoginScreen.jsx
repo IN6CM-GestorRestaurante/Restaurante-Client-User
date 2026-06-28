@@ -16,7 +16,7 @@ import Button from "../../../shared/components/Button"
 import { useAuth } from "../hooks/useAuth"
 
 // Asegúrate de que esta ruta coincida exactamente con la ubicación de tu archivo desde la carpeta actual
-const fondoImage = require("../assets/fondo.jpg");
+const fondoImage = require("../../../../assets/fondo.jpg");
 
 const LoginScreen = ({ navigation }) => {
     const { handleLogin, loading } = useAuth();
