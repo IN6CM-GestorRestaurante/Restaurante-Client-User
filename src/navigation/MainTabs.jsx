@@ -5,24 +5,21 @@ import { COLORS } from "../shared/constants/theme";
 import { MaterialIcons } from "@expo/vector-icons";
 
 // Screen imports
-import FieldsScreen from "../features/fields/screens/FieldsScreen";
+import MenusScreen from "../features/menus/screens/MenusScreen";
+import TablesScreen from "../features/tables/screens/TablesScreen";
+import OrdersScreen from "../features/orders/screens/OrdersScreen";
+import BillsScreen from "../features/bills/screens/BillsScreen";
 import ProfileScreen from "../features/profile/screens/ProfileScreen";
-import FieldDetailScreen from "../features/fields/screens/FIeldDetailScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 // Stacks for nested navigation
-const FieldsStack = () => (
+const MenusStack = () => (
     <Stack.Navigator>
         <Stack.Screen
-            name="FieldsList"
-            component={FieldsScreen}
-            options={{ title: "Menus" }}
-        />
-        <Stack.Screen
-            name="FieldDetail"
-            component={FieldDetailScreen}
+            name="MenusList"
+            component={MenusScreen}
             options={{ title: "Menús" }}
         />
     </Stack.Navigator>
@@ -47,7 +44,7 @@ const MainTabs = () => {
                     let iconName;
                     if (route.name === "Menus") iconName = "menu-book";
                     else if (route.name === "Mesas") iconName = "table-restaurant";
-                    else if (route.name === "Ordenes") iconName = "order-bool";
+                    else if (route.name === "Ordenes") iconName = "event-note"; // A better icon for orders
                     else if (route.name === "Facturas") iconName = "receipt-long";
                     else if (route.name === "Profile") iconName = "person";
 
@@ -59,6 +56,21 @@ const MainTabs = () => {
                 name="Menus"
                 component={MenusStack}
                 options={{ title: "Menús" }}
+            />
+            <Tab.Screen
+                name="Mesas"
+                component={TablesScreen}
+                options={{ title: "Mesas", headerShown: true }}
+            />
+            <Tab.Screen
+                name="Ordenes"
+                component={OrdersScreen}
+                options={{ title: "Órdenes", headerShown: true }}
+            />
+            <Tab.Screen
+                name="Facturas"
+                component={BillsScreen}
+                options={{ title: "Facturas", headerShown: true }}
             />
             <Tab.Screen
                 name="Profile"
