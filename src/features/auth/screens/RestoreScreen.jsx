@@ -17,33 +17,30 @@ import { useAuth } from "../hooks/useAuth"
 
 const fondoCocina = require("../../../../assets/fondo_cocina.png");
 
-const RegisterScreen = ({ navigation }) => {
-    const { handleRegister, loading } = useAuth();
+const ForgotPasswordScreen = ({ navigation }) => {
+    const { handleRecoverPassword, loading } = useAuth();
 
     const { control, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
-            username: "",
-            email: "",
-            password: "",
-            confirmPassword: ""
+            email: ""
         }
     })
 
     const onSubmit = async (data) => {
-        if (data.password !== data.confirmPassword) {
-            Alert.alert("Error", "Las contraseñas no coinciden");
-            return;
-        }
-
         try {
-            if (handleRegister) {
-                await handleRegister(data)
+            if (handleRecoverPassword) {
+                await handleRecoverPassword(data.email)
+                Alert.alert(
+                    "Correo enviado", 
+                    "Si el correo está registrado, recibirás instrucciones para restablecer tu contraseña."
+                )
+                navigation.navigate("Login")
             } else {
-                Alert.alert("Aviso", "El registro está en construcción.");
+                Alert.alert("Aviso", "La recuperación de contraseña está en construcción.");
             }
         } catch (error) {
             console.error(error);
-            const message = error.response?.data?.message || "Error al registrarse"
+            const message = error.response?.data?.message || "Error al procesar la solicitud"
             Alert.alert("Error", message)
         }
     }
@@ -62,43 +59,26 @@ const RegisterScreen = ({ navigation }) => {
                         <View style={styles.cardContainer}>
                             
                             <View style={styles.header}>
-                                <Text style={styles.title}>Crear Cuenta</Text>
+                                <Text style={styles.title}>Recuperar cuenta</Text>
                                 <Text style={styles.subtitle}>
-                                    Únete y comienza a administrar tu restaurante.
+                                    Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.
                                 </Text>
                             </View>
 
                             <View style={styles.form}>
                                 
-                                {/* Input Usuario */}
-                                <View style={styles.inputGroup}>
-                                    <Text style={styles.inputLabel}>Usuario</Text>
-                                    <Controller
-                                        control={control}
-                                        rules={{ required: "El usuario es requerido" }}
-                                        render={({ field: { onChange, value } }) => (
-                                            <TextInput
-                                                style={[styles.input, errors.username && styles.inputError]}
-                                                placeholder="Tu usuario"
-                                                placeholderTextColor="#A0A0A0"
-                                                onChangeText={onChange}
-                                                value={value}
-                                                autoCapitalize="none"
-                                            />
-                                        )}
-                                        name="username"
-                                    />
-                                    {errors.username && (
-                                        <Text style={styles.errorText}>{errors.username.message}</Text>
-                                    )}
-                                </View>
-
                                 {/* Input Email */}
                                 <View style={styles.inputGroup}>
                                     <Text style={styles.inputLabel}>Correo electrónico</Text>
                                     <Controller
                                         control={control}
-                                        rules={{ required: "El email es requerido" }}
+                                        rules={{ 
+                                            required: "El email es requerido",
+                                            pattern: {
+                                                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                                message: "Dirección de correo inválida"
+                                            }
+                                        }}
                                         render={({ field: { onChange, value } }) => (
                                             <TextInput
                                                 style={[styles.input, errors.email && styles.inputError]}
@@ -117,30 +97,6 @@ const RegisterScreen = ({ navigation }) => {
                                     )}
                                 </View>
 
-                                {/* Input Contraseña */}
-                                <View style={styles.inputGroup}>
-                                    <Text style={styles.inputLabel}>Contraseña</Text>
-                                    <Controller
-                                        control={control}
-                                        rules={{ required: "La contraseña es requerida" }}
-                                        render={({ field: { onChange, value } }) => (
-                                            <TextInput
-                                                style={[styles.input, errors.password && styles.inputError]}
-                                                placeholder="••••••••"
-                                                placeholderTextColor="#A0A0A0"
-                                                secureTextEntry
-                                                onChangeText={onChange}
-                                                value={value}
-                                                autoCapitalize="none"
-                                            />
-                                        )}
-                                        name="password"
-                                    />
-                                    {errors.password && (
-                                        <Text style={styles.errorText}>{errors.password.message}</Text>
-                                    )}
-                                </View>
-
                                 <TouchableOpacity 
                                     style={styles.primaryButton}
                                     onPress={handleSubmit(onSubmit)}
@@ -148,13 +104,13 @@ const RegisterScreen = ({ navigation }) => {
                                     disabled={loading}
                                 >
                                     <Text style={styles.primaryButtonText}>
-                                        {loading ? "Cargando..." : "Registrarse"}
+                                        {loading ? "Enviando..." : "Enviar enlace"}
                                     </Text>
                                 </TouchableOpacity>
                             </View>
 
                             <View style={styles.footer}>
-                                <Text style={styles.footerText}>¿Ya tienes cuenta?</Text>
+                                <Text style={styles.footerText}>¿Recordaste tu contraseña?</Text>
                                 <TouchableOpacity 
                                     onPress={() => navigation.navigate("Login")}
                                     activeOpacity={0.7}
@@ -222,7 +178,7 @@ const styles = StyleSheet.create({
         width: "100%",
     },
     inputGroup: {
-        marginBottom: 16,
+        marginBottom: 24, 
     },
     inputLabel: {
         fontSize: 14,
@@ -262,7 +218,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 8,
         elevation: 6,
-        marginTop: 12,
     },
     primaryButtonText: {
         fontSize: 16,
@@ -270,7 +225,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     footer: {
-        marginTop: 28,
+        marginTop: 32,
         alignItems: "center",
         flexDirection: "row",
         justifyContent: "center",
@@ -287,4 +242,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default RegisterScreen;
+export default ForgotPasswordScreen;
