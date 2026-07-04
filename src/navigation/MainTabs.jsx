@@ -1,7 +1,10 @@
+// src/navigation/MainTabs.jsx
 import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { COLORS } from "../shared/constants/theme";
+import { COLORS, SPACING, FONT_SIZE } from "../shared/constants/theme";
 import { MaterialIcons } from "@expo/vector-icons";
 
 // Screen imports
@@ -14,18 +17,65 @@ import ProfileScreen from "../features/profile/screens/ProfileScreen";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
+// Placeholder screens
+const PlaceholderScreen = ({ title }) => (
+    <View style={styles.placeholderContainer}>
+        <Text style={styles.placeholderTitle}>{title}</Text>
+    </View>
+);
+
 // Stacks for nested navigation
 const MenusStack = () => (
-    <Stack.Navigator>
-        <Stack.Screen
-            name="MenusList"
-            component={MenusScreen}
-            options={{ title: "Menús" }}
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="MenusList" component={MenusScreen} />
+        <Stack.Screen 
+            name="MenuDetail" 
+            component={() => <PlaceholderScreen title="Detalle de Menú" />}
+        />
+    </Stack.Navigator>
+);
+
+const TablesStack = () => (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="TablesList" component={TablesScreen} />
+        <Stack.Screen 
+            name="TableDetail" 
+            component={() => <PlaceholderScreen title="Detalle de Mesa" />}
+        />
+        <Stack.Screen 
+            name="CreateReservation" 
+            component={() => <PlaceholderScreen title="Crear Reserva" />}
+        />
+    </Stack.Navigator>
+);
+
+const OrdersStack = () => (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="OrdersList" component={OrdersScreen} />
+        <Stack.Screen 
+            name="OrderDetail" 
+            component={() => <PlaceholderScreen title="Detalle de Orden" />}
+        />
+        <Stack.Screen 
+            name="CreateOrder" 
+            component={() => <PlaceholderScreen title="Crear Orden" />}
+        />
+    </Stack.Navigator>
+);
+
+const BillsStack = () => (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="BillsList" component={BillsScreen} />
+        <Stack.Screen 
+            name="BillDetail" 
+            component={() => <PlaceholderScreen title="Detalle de Factura" />}
         />
     </Stack.Navigator>
 );
 
 const MainTabs = () => {
+    const insets = useSafeAreaInsets();
+    
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
@@ -36,17 +86,17 @@ const MainTabs = () => {
                     backgroundColor: COLORS.surface,
                     borderTopWidth: 1,
                     borderTopColor: COLORS.border,
-                    height: 60,
-                    paddingBottom: 8,
+                    height: 60 + insets.bottom,
+                    paddingBottom: 8 + insets.bottom,
                     paddingTop: 4,
                 },
                 tabBarIcon: ({ color, size }) => {
                     let iconName;
                     if (route.name === "Menus") iconName = "menu-book";
                     else if (route.name === "Mesas") iconName = "table-restaurant";
-                    else if (route.name === "Ordenes") iconName = "event-note"; // A better icon for orders
+                    else if (route.name === "Ordenes") iconName = "event-note";
                     else if (route.name === "Facturas") iconName = "receipt-long";
-                    else if (route.name === "Profile") iconName = "person";
+                    else if (route.name === "Perfil") iconName = "person";
 
                     return <MaterialIcons name={iconName} size={size} color={color} />;
                 },
@@ -59,26 +109,42 @@ const MainTabs = () => {
             />
             <Tab.Screen
                 name="Mesas"
-                component={TablesScreen}
-                options={{ title: "Mesas", headerShown: true }}
+                component={TablesStack}
+                options={{ title: "Mesas" }}
             />
             <Tab.Screen
                 name="Ordenes"
-                component={OrdersScreen}
-                options={{ title: "Órdenes", headerShown: true }}
+                component={OrdersStack}
+                options={{ title: "Órdenes" }}
             />
             <Tab.Screen
                 name="Facturas"
-                component={BillsScreen}
-                options={{ title: "Facturas", headerShown: true }}
+                component={BillsStack}
+                options={{ title: "Facturas" }}
             />
             <Tab.Screen
-                name="Profile"
+                name="Perfil"
                 component={ProfileScreen}
                 options={{ title: "Perfil", headerShown: true }}
             />
         </Tab.Navigator>
     );
 };
+
+const styles = StyleSheet.create({
+    placeholderContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: COLORS.background,
+        padding: SPACING.xl,
+    },
+    placeholderTitle: {
+        fontSize: FONT_SIZE.xl,
+        fontWeight: "bold",
+        color: COLORS.primary,
+        textAlign: "center",
+    },
+});
 
 export default MainTabs;
