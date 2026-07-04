@@ -14,6 +14,9 @@ import {
 
 import { useForm, Controller } from "react-hook-form"
 import { useAuth } from "../hooks/useAuth"
+import Input from "../../../shared/components/Input"
+import Button from "../../../shared/components/Button"
+import { COLORS, SPACING, FONT_SIZE } from "../../../shared/constants/theme"
 
 const fondoCocina = require("../../../../assets/fondo_cocina.png");
 
@@ -66,47 +69,34 @@ const ForgotPasswordScreen = ({ navigation }) => {
                             </View>
 
                             <View style={styles.form}>
-                                
-                                {/* Input Email */}
-                                <View style={styles.inputGroup}>
-                                    <Text style={styles.inputLabel}>Correo electrónico</Text>
-                                    <Controller
-                                        control={control}
-                                        rules={{ 
-                                            required: "El email es requerido",
-                                            pattern: {
-                                                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                                message: "Dirección de correo inválida"
-                                            }
-                                        }}
-                                        render={({ field: { onChange, value } }) => (
-                                            <TextInput
-                                                style={[styles.input, errors.email && styles.inputError]}
-                                                placeholder="correo@ejemplo.com"
-                                                placeholderTextColor="#A0A0A0"
-                                                onChangeText={onChange}
-                                                value={value}
-                                                autoCapitalize="none"
-                                                keyboardType="email-address"
-                                            />
-                                        )}
-                                        name="email"
-                                    />
-                                    {errors.email && (
-                                        <Text style={styles.errorText}>{errors.email.message}</Text>
+                                <Controller
+                                    control={control}
+                                    rules={{
+                                        required: "El email es requerido",
+                                        pattern: {
+                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                            message: "Dirección de correo inválida"
+                                        }
+                                    }}
+                                    render={({ field: { onChange, value } }) => (
+                                        <Input
+                                            label="Correo electrónico"
+                                            placeholder="correo@ejemplo.com"
+                                            value={value}
+                                            onChangeText={onChange}
+                                            error={errors.email?.message}
+                                            autoCapitalize="none"
+                                            keyboardType="email-address"
+                                        />
                                     )}
-                                </View>
+                                    name="email"
+                                />
 
-                                <TouchableOpacity 
-                                    style={styles.primaryButton}
+                                <Button
+                                    title={loading ? "Enviando..." : "Enviar enlace"}
                                     onPress={handleSubmit(onSubmit)}
-                                    activeOpacity={0.8}
-                                    disabled={loading}
-                                >
-                                    <Text style={styles.primaryButtonText}>
-                                        {loading ? "Enviando..." : "Enviar enlace"}
-                                    </Text>
-                                </TouchableOpacity>
+                                    loading={loading}
+                                />
                             </View>
 
                             <View style={styles.footer}>
@@ -135,7 +125,7 @@ const styles = StyleSheet.create({
     },
     darkOverlay: {
         flex: 1,
-        backgroundColor: "rgba(0, 0, 0, 0.25)", 
+        backgroundColor: "rgba(0, 0, 0, 0.25)",
     },
     keyboardView: {
         flex: 1,
@@ -143,14 +133,14 @@ const styles = StyleSheet.create({
     scrollContent: {
         flexGrow: 1,
         justifyContent: "center",
-        padding: 24,
+        padding: SPACING.xl,
     },
     cardContainer: {
-        backgroundColor: "rgba(255, 255, 255, 0.96)", 
+        backgroundColor: "rgba(255, 255, 255, 0.96)",
         borderRadius: 24,
-        paddingHorizontal: 24,
-        paddingVertical: 32,
-        shadowColor: "#000",
+        paddingHorizontal: SPACING.xl,
+        paddingVertical: SPACING.xxl,
+        shadowColor: COLORS.primaryDark,
         shadowOffset: { width: 0, height: 10 },
         shadowOpacity: 0.15,
         shadowRadius: 20,
@@ -158,87 +148,43 @@ const styles = StyleSheet.create({
     },
     header: {
         alignItems: "center",
-        marginBottom: 32,
+        marginBottom: SPACING.xl,
     },
     title: {
-        fontSize: 26,
+        fontSize: FONT_SIZE.xxl,
         fontWeight: "800",
-        color: "#1A1A1A",
-        marginBottom: 8,
+        color: COLORS.text,
+        marginBottom: SPACING.sm,
         textAlign: "center",
+        letterSpacing: 0.5,
     },
     subtitle: {
-        fontSize: 14,
-        color: "#666666",
+        fontSize: FONT_SIZE.md,
+        color: COLORS.textLight,
         textAlign: "center",
         lineHeight: 20,
-        paddingHorizontal: 10,
+        paddingHorizontal: SPACING.sm,
+        fontWeight: "500",
     },
     form: {
         width: "100%",
     },
-    inputGroup: {
-        marginBottom: 24, 
-    },
-    inputLabel: {
-        fontSize: 14,
-        fontWeight: "600",
-        color: "#333333",
-        marginBottom: 8,
-        marginLeft: 4,
-    },
-    input: {
-        height: 52,
-        backgroundColor: "#F7F8FA", 
-        borderWidth: 1,
-        borderColor: "#E2E8F0",
-        borderRadius: 14,
-        paddingHorizontal: 16,
-        fontSize: 15,
-        color: "#1A1A1A",
-    },
-    inputError: {
-        borderColor: "#EF4444",
-        backgroundColor: "#FEF2F2",
-    },
-    errorText: {
-        color: "#EF4444",
-        fontSize: 12,
-        marginTop: 6,
-        marginLeft: 4,
-    },
-    primaryButton: {
-        backgroundColor: "#E65100", 
-        height: 54,
-        borderRadius: 14,
-        alignItems: "center",
-        justifyContent: "center",
-        shadowColor: "#E65100",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 6,
-    },
-    primaryButtonText: {
-        fontSize: 16,
-        color: "#FFFFFF",
-        fontWeight: "bold",
-    },
     footer: {
-        marginTop: 32,
+        marginTop: SPACING.xl,
         alignItems: "center",
         flexDirection: "row",
         justifyContent: "center",
     },
     footerText: {
-        fontSize: 14,
-        color: "#666666",
-        marginRight: 6,
+        fontSize: FONT_SIZE.md,
+        color: COLORS.textLight,
+        marginRight: SPACING.xs,
+        fontWeight: "500",
     },
     registerLink: {
-        fontSize: 14,
-        fontWeight: "bold",
-        color: "#D94A00",
+        fontSize: FONT_SIZE.md,
+        fontWeight: "700",
+        color: COLORS.primary,
     },
 });
 
