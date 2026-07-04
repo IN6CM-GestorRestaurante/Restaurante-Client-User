@@ -51,25 +51,31 @@ const Button = ({
 const styles = StyleSheet.create({
     button: {
         paddingVertical: SPACING.md,
-        borderRadius: 8,
+        borderRadius: 12,
         alignItems: "center",
         justifyContent: "center",
         width: "100%",
     },
     buttonPrimary: {
         backgroundColor: COLORS.primary,
+        shadowColor: COLORS.primaryDark,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 4,
     },
     buttonSecondary: {
         backgroundColor: "transparent",
-        borderWidth: 1,
+        borderWidth: 2,
         borderColor: COLORS.primary,
     },
     buttonDisabled: {
-        opacity: 0.6,
+        opacity: 0.5,
     },
     text: {
         fontSize: FONT_SIZE.md,
         fontWeight: "700",
+        letterSpacing: 0.3,
     },
     textPrimary: {
         color: COLORS.surface,
