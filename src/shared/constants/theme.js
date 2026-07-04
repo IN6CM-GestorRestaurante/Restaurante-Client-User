@@ -1,15 +1,21 @@
 export const COLORS = {
-    primary: "#08316D", // Azul principal igual que la web
-    primaryDark: "#08316D", // Azul principal igual que la web
-    secondary: "#64748b", // Slate 500
-    background: "#f8fafc", // Slate 50
-    surface: "#ffffff",
-    text: "#0f172a", // Slate 900
-    textLight: "#64748b", // Slate 500
-    error: "#ef4444", // Red 500
-    success: "#22c55e", // Green 500
-    warning: "#f59e0b", // Amber 500
-    border: "#e2e8f0", // Slate 200
+    primary: "#E65100", // Naranja oscuro - color principal cálido
+    primaryDark: "#BF360C", // Naranja muy oscuro
+    primaryLight: "#FF9800", // Naranja claro
+    secondary: "#D84315", // Rojo anaranjado
+    background: "#FFF8F0", // Crema muy claro - fondo cálido
+    surface: "#FFFFFF",
+    surfaceVariant: "#FFF3E0", // Crema naranja claro
+    text: "#2D2D2D", // Gris oscuro casi negro
+    textLight: "#757575", // Gris medio
+    textMuted: "#9E9E9E", // Gris claro
+    error: "#D32F2F", // Rojo profesional
+    success: "#388E3C", // Verde profesional
+    warning: "#F57C00", // Naranja warning
+    info: "#1976D2", // Azul info
+    border: "#E0E0E0", // Gris claro para bordes
+    divider: "#EEEEEE", // Gris muy claro para divisores
+    accent: "#FF6F00", // Naranja vibrante para acentos
 };
 
 export const SPACING = {
@@ -33,17 +39,24 @@ export const FONT_SIZE = {
 
 export const SHADOWS = {
     sm: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.18,
-        shadowRadius: 1.0,
-        elevation: 1,
+        shadowColor: COLORS.primaryDark,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
     },
     md: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
+        shadowColor: COLORS.primaryDark,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+    lg: {
+        shadowColor: COLORS.primaryDark,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.2,
+        shadowRadius: 16,
+        elevation: 8,
     },
 };
