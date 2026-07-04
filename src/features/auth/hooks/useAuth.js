@@ -1,5 +1,4 @@
 import { useState } from "react";
-import authClient from "../../../shared/api/authClient.js";
 import { useAuthStore } from "../../../shared/store/authStore.js";
 
 export const useAuth = () => {
@@ -12,19 +11,29 @@ export const useAuth = () => {
         try {
             setLoading(true);
             setError(null);
-            const response = await authClient.post("/login", data);
-            // El backend (auth-node) devuelve: accessToken, refreshToken, userDetails
-            // (algunos servicios pueden devolver variantes como token/user)
-            const { accessToken, refreshToken, userDetails, token, user } =
-                response.data;
-
-            const mappedAccessToken = accessToken || token;
-            const mappedUser = userDetails || user;
-
-            await login(mappedAccessToken, mappedUser, refreshToken);
-            return response.data;
+            
+            // Simular delay de red
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Datos mock para login
+            const mockResponse = {
+                accessToken: "mock_access_token_" + Date.now(),
+                refreshToken: "mock_refresh_token_" + Date.now(),
+                user: {
+                    id: "mock_user_1",
+                    username: data.emailOrUsername,
+                    email: data.emailOrUsername,
+                    name: "Usuario",
+                    surname: "Demo",
+                    phone: "+502 1234 5678",
+                    displayName: "Usuario Demo"
+                }
+            };
+            
+            await login(mockResponse.accessToken, mockResponse.user, mockResponse.refreshToken);
+            return mockResponse;
         } catch (err) {
-            setError(err.response?.data?.message || "Error al iniciar sesión");
+            setError("Error al iniciar sesión");
             throw err;
         } finally {
             setLoading(false);
@@ -35,29 +44,17 @@ export const useAuth = () => {
         try {
             setLoading(true);
             setError(null);
-
-            const formData = new FormData();
-
-            formData.append("name", data.name);
-            formData.append("surname", data.surname);
-            formData.append("username", data.username);
-            formData.append("email", data.email);
-            formData.append("password", data.password);
-            formData.append("phone", data.phone);
-
-            const response = await authClient.post(
-                "/register",
-                formData,
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                }
-            );
-
-            return response.data;
+            
+            // Simular delay de red
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Datos mock para registro
+            return {
+                success: true,
+                message: "Registro exitoso"
+            };
         } catch (err) {
-            setError(err.response?.data?.message || "Error al registrarse");
+            setError("Error al registrarse");
             throw err;
         } finally {
             setLoading(false);
