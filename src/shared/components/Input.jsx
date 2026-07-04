@@ -1,4 +1,3 @@
-
 import { TextInput, View, Text, StyleSheet } from "react-native";
 import { COLORS, SPACING, FONT_SIZE } from "../constants/theme"
 
@@ -31,19 +30,30 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.surface,
         borderWidth: 1,
         borderColor: COLORS.border,
-        borderRadius: 8,
+        borderRadius: 12,
         paddingHorizontal: SPACING.md,
         paddingVertical: SPACING.sm,
         fontSize: FONT_SIZE.md,
         color: COLORS.text,
+        shadowColor: COLORS.primaryDark,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+        elevation: 1,
     },
     inputError: {
         borderColor: COLORS.error,
+        shadowColor: COLORS.error,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 1,
     },
     errorText: {
         color: COLORS.error,
         fontSize: FONT_SIZE.xs,
         marginTop: SPACING.xs,
+        fontWeight: "500",
     },
 });
 
