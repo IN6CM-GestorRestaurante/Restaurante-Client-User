@@ -7,7 +7,8 @@ import { Card, LoadingSpinner, EmptyState } from "../../../shared/components/Com
 import { COLORS, SPACING, FONT_SIZE } from "../../../shared/constants/theme";
 import CartModal from "../components/CartModal";
 
-const CATEGORIES = ["Todos", "Entradas", "Platos Fuertes", "Bebidas", "Postres"];
+// Debe calzar exacto con el enum de category del modelo Menu en ServerUser/ServerAdmin
+const CATEGORIES = ["Todos", "Entrada", "Plato Fuerte", "Acompañamiento", "Bebida", "Postre", "Otro"];
 
 const MenusScreen = ({ navigation }) => {
     const { menus, loading, error, refetch } = useMenus();

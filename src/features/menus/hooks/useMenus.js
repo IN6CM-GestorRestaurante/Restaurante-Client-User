@@ -1,13 +1,17 @@
 // src/features/menus/hooks/useMenus.js
 import { useState, useCallback, useEffect } from "react";
+import userClient from "../../../shared/api/userClient.js";
 
-const MOCK_MENUS = [
-    { id: 1, name: "Hamburguesa Clásica", description: "Carne de res, queso cheddar, lechuga y tomate", price: 8.50, category: "Platos Fuertes", image: null },
-    { id: 2, name: "Pizza Margarita", description: "Salsa de tomate casera, mozzarella fresca y albahaca", price: 12.00, category: "Platos Fuertes", image: null },
-    { id: 3, name: "Ensalada César", description: "Lechuga romana, crotones, parmesano y aderezo", price: 6.50, category: "Entradas", image: null },
-    { id: 4, name: "Limonada con Menta", description: "Refrescante limonada natural con hojas de menta", price: 3.00, category: "Bebidas", image: null },
-    { id: 5, name: "Pastel de Chocolate", description: "Rebanada de pastel de chocolate oscuro con nueces", price: 4.50, category: "Postres", image: null },
-];
+const mapMenuItem = (m) => ({
+    id: m._id || m.id,
+    name: m.name,
+    description: m.description,
+    price: m.price,
+    category: m.category,
+    image: m.image?.startsWith("http") ? m.image : null,
+    isAvailable: m.isActive !== false,
+    promotion: m.promotion,
+});
 
 export const useMenus = () => {
     const [menus, setMenus] = useState([]);
@@ -18,14 +22,14 @@ export const useMenus = () => {
         try {
             setLoading(true);
             setError(null);
-            
-            // Simular delay de red
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-            // Datos mock
-            setMenus(MOCK_MENUS);
+
+            const response = await userClient.get("/menus", { params: { limit: 100 } });
+            const raw = response.data?.data ?? [];
+            setMenus(Array.isArray(raw) ? raw.map(mapMenuItem) : []);
         } catch (err) {
-            setError("Error al cargar menús");
+            console.warn("Error fetching menus:", err);
+            setError(err.response?.data?.message || "Error al cargar el menú");
+            setMenus([]);
         } finally {
             setLoading(false);
         }
