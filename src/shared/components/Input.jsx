@@ -1,19 +1,30 @@
 import { TextInput, View, Text, StyleSheet } from "react-native";
-import { COLORS, SPACING, FONT_SIZE } from "../constants/theme"
+import { MaterialIcons } from "@expo/vector-icons";
+import { COLORS, SPACING, FONT_SIZE } from "../constants/theme";
 
-const Input = ({ label, error, ...props}) => {
+const Input = ({ label, error, iconName, ...props }) => {
     return (
         <View style={styles.container}>
             {label && <Text style={styles.label}>{label}</Text>}
-            <TextInput
-                style={[styles.input, error && styles.inputError]}
-                placeholderTextColor={COLORS.secondary}
-                {...props}
-            />
+            <View style={[styles.inputContainer, error && styles.inputError]}>
+                {iconName && (
+                    <MaterialIcons 
+                        name={iconName} 
+                        size={20} 
+                        color={COLORS.text} 
+                        style={styles.icon} 
+                    />
+                )}
+                <TextInput
+                    style={styles.input}
+                    placeholderTextColor={COLORS.textLight}
+                    {...props}
+                />
+            </View>
             {error && <Text style={styles.errorText}>{error}</Text>}
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -26,34 +37,35 @@ const styles = StyleSheet.create({
         color: COLORS.text,
         marginBottom: SPACING.xs,
     },
-    input: {
-        backgroundColor: COLORS.surface,
+    inputContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "transparent",
         borderWidth: 1,
         borderColor: COLORS.border,
-        borderRadius: 12,
-        paddingHorizontal: SPACING.md,
-        paddingVertical: SPACING.sm,
+        borderRadius: 50,
+        paddingHorizontal: SPACING.lg,
+        paddingVertical: SPACING.md,
+        overflow: "hidden", // Previene que el texto se salga de la píldora
+    },
+    icon: {
+        marginRight: SPACING.sm,
+    },
+    input: {
+        flex: 1,
+        minWidth: 0, // Clave en web para evitar que un flex-item rompa el contenedor
         fontSize: FONT_SIZE.md,
         color: COLORS.text,
-        shadowColor: COLORS.primaryDark,
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
-        elevation: 1,
     },
     inputError: {
         borderColor: COLORS.error,
-        shadowColor: COLORS.error,
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-        elevation: 1,
     },
     errorText: {
         color: COLORS.error,
         fontSize: FONT_SIZE.xs,
         marginTop: SPACING.xs,
         fontWeight: "500",
+        marginLeft: SPACING.md,
     },
 });
 

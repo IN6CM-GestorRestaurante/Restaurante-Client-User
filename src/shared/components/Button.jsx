@@ -51,18 +51,16 @@ const Button = ({
 const styles = StyleSheet.create({
     button: {
         paddingVertical: SPACING.md,
-        borderRadius: 12,
+        borderRadius: 50,
         alignItems: "center",
         justifyContent: "center",
         width: "100%",
+        marginTop: SPACING.sm,
     },
     buttonPrimary: {
-        backgroundColor: COLORS.primary,
-        shadowColor: COLORS.primaryDark,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 4,
+        backgroundColor: "transparent",
+        borderWidth: 1,
+        borderColor: COLORS.primary,
     },
     buttonSecondary: {
         backgroundColor: "transparent",
@@ -78,7 +76,7 @@ const styles = StyleSheet.create({
         letterSpacing: 0.3,
     },
     textPrimary: {
-        color: COLORS.surface,
+        color: COLORS.primary,
     },
     textSecondary: {
         color: COLORS.primary,
