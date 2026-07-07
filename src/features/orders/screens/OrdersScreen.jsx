@@ -1,38 +1,58 @@
 // src/features/orders/screens/OrdersScreen.jsx
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Alert } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useOrders } from "../hooks/useOrders";
 import { Card, LoadingSpinner, EmptyState } from "../../../shared/components/Common";
 import { COLORS, SPACING, FONT_SIZE } from "../../../shared/constants/theme";
 
+// Debe calzar exacto con el enum de status del modelo Order en ServerUser/ServerAdmin
+const getStatusColor = (status) => {
+    switch (status) {
+        case "pending": return COLORS.warning;
+        case "in-kitchen": return COLORS.primary;
+        case "ready": return COLORS.success;
+        case "delivered": return COLORS.success;
+        case "paid": return COLORS.info;
+        case "cancelled": return COLORS.error;
+        default: return COLORS.secondary;
+    }
+};
+
+const getStatusText = (status) => {
+    switch (status) {
+        case "pending": return "Pendiente";
+        case "in-kitchen": return "En cocina";
+        case "ready": return "Lista";
+        case "delivered": return "Entregada";
+        case "paid": return "Pagada";
+        case "cancelled": return "Cancelada";
+        default: return status;
+    }
+};
+
 const OrdersScreen = ({ navigation }) => {
-    const { orders, loading, error, refetch } = useOrders();
+    const { orders, loading, error, refetch, cancelOrder } = useOrders();
 
     if (loading && orders.length === 0) {
         return <LoadingSpinner />;
     }
 
-    const getStatusColor = (status) => {
-        switch (status?.toLowerCase()) {
-            case "pending": return COLORS.warning;
-            case "preparing": return COLORS.primary;
-            case "ready": return COLORS.success;
-            case "delivered": return COLORS.success;
-            case "cancelled": return COLORS.error;
-            default: return COLORS.secondary;
-        }
-    };
-
-    const getStatusText = (status) => {
-        switch (status?.toLowerCase()) {
-            case "pending": return "Pendiente";
-            case "preparing": return "Preparando";
-            case "ready": return "Lista";
-            case "delivered": return "Entregada";
-            case "cancelled": return "Cancelada";
-            default: return status;
-        }
+    const handleCancel = (order) => {
+        Alert.alert("Cancelar pedido", "¿Estás seguro de que quieres cancelar este pedido?", [
+            { text: "No", style: "cancel" },
+            {
+                text: "Sí, cancelar",
+                style: "destructive",
+                onPress: async () => {
+                    try {
+                        await cancelOrder(order.id);
+                    } catch (err) {
+                        Alert.alert("Error", err.response?.data?.message || "No se pudo cancelar el pedido");
+                    }
+                },
+            },
+        ]);
     };
 
     return (
@@ -82,6 +102,18 @@ const OrdersScreen = ({ navigation }) => {
                                         </Text>
                                     </View>
                                 </View>
+                                {order.status === "pending" && (
+                                    <TouchableOpacity
+                                        style={styles.cancelButton}
+                                        onPress={(e) => {
+                                            e.stopPropagation();
+                                            handleCancel(order);
+                                        }}
+                                    >
+                                        <MaterialIcons name="cancel" size={18} color={COLORS.error} />
+                                        <Text style={styles.cancelText}>Cancelar Pedido</Text>
+                                    </TouchableOpacity>
+                                )}
                             </Card>
                         </TouchableOpacity>
                     ))
@@ -173,6 +205,18 @@ const styles = StyleSheet.create({
         fontSize: FONT_SIZE.sm,
         color: COLORS.textLight,
         fontWeight: "500",
+    },
+    cancelButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: SPACING.xs,
+        marginTop: SPACING.md,
+        alignSelf: "flex-start",
+    },
+    cancelText: {
+        color: COLORS.error,
+        fontWeight: "700",
+        fontSize: FONT_SIZE.sm,
     },
 });
 
