@@ -1,2 +1,4 @@
+packages:
+  - '.'
 patchedDependencies:
   zustand: patches/zustand.patch
