@@ -18,6 +18,8 @@ import ProfileScreen from "../features/profile/screens/ProfileScreen";
 import CreateReservationScreen from "../features/reservations/screens/CreateReservationScreen";
 import MyReservationsScreen from "../features/reservations/screens/MyReservationsScreen";
 import ReviewsScreen from "../features/reviews/screens/ReviewsScreen";
+import BillDetailScreen from "../features/bills/screens/BillDetailScreen";
+import OrderDetailScreen from "../features/orders/screens/OrderDetailScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -73,7 +75,7 @@ const OrdersStack = () => (
         <Stack.Screen name="OrdersList" component={OrdersScreen} />
         <Stack.Screen 
             name="OrderDetail" 
-            component={() => <PlaceholderScreen title="Detalle de Orden" />}
+            component={OrderDetailScreen}
         />
         <Stack.Screen 
             name="CreateOrder" 
@@ -87,7 +89,7 @@ const BillsStack = () => (
         <Stack.Screen name="BillsList" component={BillsScreen} />
         <Stack.Screen 
             name="BillDetail" 
-            component={() => <PlaceholderScreen title="Detalle de Factura" />}
+            component={BillDetailScreen}
         />
     </Stack.Navigator>
 );

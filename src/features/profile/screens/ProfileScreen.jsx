@@ -1,6 +1,6 @@
 // src/features/profile/screens/ProfileScreen.jsx
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Image } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Image, Platform } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useForm, Controller } from "react-hook-form";
 import { useProfile } from "../hooks/useProfile";
@@ -49,16 +49,22 @@ const ProfileScreen = () => {
     };
 
     const handleLogout = async () => {
-        Alert.alert(
-            "Cerrar Sesión",
-            "¿Estás seguro de que quieres cerrar sesión?",
-            [
-                { text: "Cancelar", style: "cancel" },
-                { text: "Cerrar Sesión", style: "destructive", onPress: async () => {
-                    await logout();
-                }}
-            ]
-        );
+        if (Platform.OS === "web") {
+            if (window.confirm("¿Estás seguro de que quieres cerrar sesión?")) {
+                await logout();
+            }
+        } else {
+            Alert.alert(
+                "Cerrar Sesión",
+                "¿Estás seguro de que quieres cerrar sesión?",
+                [
+                    { text: "Cancelar", style: "cancel" },
+                    { text: "Cerrar Sesión", style: "destructive", onPress: async () => {
+                        await logout();
+                    }}
+                ]
+            );
+        }
     };
 
     const getAvatarSource = () => {

@@ -1,6 +1,7 @@
 // src/features/bills/screens/BillsScreen.jsx
-import React from "react";
+import React, { useCallback } from "react";
 import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useBills } from "../hooks/useBills";
 import { Card, LoadingSpinner, EmptyState } from "../../../shared/components/Common";
@@ -8,6 +9,12 @@ import { COLORS, SPACING, FONT_SIZE } from "../../../shared/constants/theme";
 
 const BillsScreen = ({ navigation }) => {
     const { bills, loading, error, refetch } = useBills();
+
+    useFocusEffect(
+        useCallback(() => {
+            refetch();
+        }, [refetch])
+    );
 
     if (loading && bills.length === 0) {
         return <LoadingSpinner />;
@@ -53,7 +60,7 @@ const BillsScreen = ({ navigation }) => {
                     bills.map((bill) => (
                         <TouchableOpacity
                             key={bill.id}
-                            onPress={() => navigation.navigate("BillDetail", { billId: bill.id })}
+                            onPress={() => navigation.navigate("BillDetail", { billId: bill.id, billData: bill })}
                             activeOpacity={0.7}
                         >
                             <Card style={styles.card}>
