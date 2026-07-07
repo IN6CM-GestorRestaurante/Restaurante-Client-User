@@ -7,6 +7,7 @@ import { useProfile } from "../hooks/useProfile";
 import { Card, LoadingSpinner, EmptyState } from "../../../shared/components/Common";
 import Button from "../../../shared/components/Button";
 import Input from "../../../shared/components/Input";
+import SecuritySection from "../components/SecuritySection";
 import { COLORS, SPACING, FONT_SIZE } from "../../../shared/constants/theme";
 
 const ProfileScreen = () => {
@@ -199,6 +200,8 @@ const ProfileScreen = () => {
                         </>
                     )}
                 </Card>
+
+                <SecuritySection />
 
                 <Button
                     title="Cerrar Sesión"

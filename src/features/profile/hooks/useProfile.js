@@ -1,7 +1,12 @@
 // src/features/profile/hooks/useProfile.js
 import { useState, useCallback, useEffect } from "react";
+import { Platform } from "react-native";
+import * as SecureStore from "expo-secure-store";
 import userClient from "../../../shared/api/userClient.js";
 import authClient from "../../../shared/api/authClient.js";
+import { useAuthStore } from "../../../shared/store/authStore.js";
+
+const REFRESH_TOKEN_KEY = "ks_refresh_token";
 
 export const useProfile = () => {
     const [profile, setProfile] = useState(null);
@@ -50,13 +55,18 @@ export const useProfile = () => {
 
     const logout = async () => {
         try {
-            await authClient.post("/logout");
+            const refreshToken = Platform.OS === "web"
+                ? localStorage.getItem(REFRESH_TOKEN_KEY)
+                : await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
+            if (refreshToken) {
+                await authClient.post("/logout", { refreshToken });
+            }
         } catch (err) {
             console.warn("Error en logout en servidor, procediendo localmente...", err);
         }
-        // Nota: Aquí usualmente limpiaríamos los tokens de SecureStore o AsyncStorage
-        // y el estado global dispararía el cambio de navegación a Auth.
-        // Queda preparado para integrar con tu gestor de estado (Zustand/Context).
+        // Limpia el token/usuario del estado global y del almacenamiento seguro,
+        // lo que dispara el cambio de navegación de vuelta a AuthStack.
+        await useAuthStore.getState().logout();
     };
 
     useEffect(() => {

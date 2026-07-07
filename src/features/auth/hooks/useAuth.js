@@ -86,12 +86,47 @@ export const useAuth = () => {
         }
     };
 
+    const handleChangePassword = async (currentPassword, newPassword) => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const response = await authClient.put('/change-password', { currentPassword, newPassword });
+            // El backend revoca todas las sesiones activas al cambiar la contraseña.
+            await logout();
+            return response.data;
+        } catch (err) {
+            setError(err.response?.data?.message || "No se pudo cambiar la contraseña");
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleDeleteAccount = async (password) => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const response = await authClient.delete('/account', { data: { password } });
+            await logout();
+            return response.data;
+        } catch (err) {
+            setError(err.response?.data?.message || "No se pudo eliminar la cuenta");
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return {
         handleLogin,
         handleRegister,
         handleVerifyEmail,
         handleRecoverPassword,
         handleResetPassword,
+        handleChangePassword,
+        handleDeleteAccount,
         loading,
         error,
         logout,
