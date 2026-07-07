@@ -15,6 +15,7 @@ import BillsScreen from "../features/bills/screens/BillsScreen";
 import ProfileScreen from "../features/profile/screens/ProfileScreen";
 import CreateReservationScreen from "../features/reservations/screens/CreateReservationScreen";
 import MyReservationsScreen from "../features/reservations/screens/MyReservationsScreen";
+import ReviewsScreen from "../features/reviews/screens/ReviewsScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -30,9 +31,14 @@ const PlaceholderScreen = ({ title }) => (
 const MenusStack = () => (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="MenusList" component={MenusScreen} />
-        <Stack.Screen 
-            name="MenuDetail" 
+        <Stack.Screen
+            name="MenuDetail"
             component={() => <PlaceholderScreen title="Detalle de Menú" />}
+        />
+        <Stack.Screen
+            name="Reviews"
+            component={ReviewsScreen}
+            options={{ headerShown: true, title: "Reseñas" }}
         />
     </Stack.Navigator>
 );

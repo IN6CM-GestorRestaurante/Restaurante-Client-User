@@ -5,6 +5,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useMenus } from "../hooks/useMenus";
 import { Card, LoadingSpinner, EmptyState } from "../../../shared/components/Common";
 import { COLORS, SPACING, FONT_SIZE } from "../../../shared/constants/theme";
+import { getActivePromotion } from "../../../shared/utils/pricing.js";
 import CartModal from "../components/CartModal";
 
 // Debe calzar exacto con el enum de category del modelo Menu en ServerUser/ServerAdmin
@@ -37,13 +38,22 @@ const MenusScreen = ({ navigation }) => {
                     <Text style={styles.title}>Menú</Text>
                     <Text style={styles.subtitle}>Nuestros platillos</Text>
                 </View>
-                <TouchableOpacity 
-                    style={styles.cartButton}
-                    onPress={() => setCartVisible(true)}
-                    activeOpacity={0.7}
-                >
-                    <MaterialIcons name="shopping-cart" size={24} color={COLORS.primary} />
-                </TouchableOpacity>
+                <View style={styles.headerActions}>
+                    <TouchableOpacity
+                        style={styles.cartButton}
+                        onPress={() => navigation.navigate("Reviews")}
+                        activeOpacity={0.7}
+                    >
+                        <MaterialIcons name="star-rate" size={24} color={COLORS.primary} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.cartButton}
+                        onPress={() => setCartVisible(true)}
+                        activeOpacity={0.7}
+                    >
+                        <MaterialIcons name="shopping-cart" size={24} color={COLORS.primary} />
+                    </TouchableOpacity>
+                </View>
             </View>
 
             <View style={styles.categoriesContainer}>
@@ -85,7 +95,9 @@ const MenusScreen = ({ navigation }) => {
                 ) : filteredMenus.length === 0 ? (
                     <EmptyState message="No hay items en el menú" />
                 ) : (
-                    filteredMenus.map((item) => (
+                    filteredMenus.map((item) => {
+                        const promotion = getActivePromotion(item);
+                        return (
                         <TouchableOpacity
                             key={item.id}
                             onPress={() => navigation.navigate("MenuDetail", { menuId: item.id })}
@@ -97,8 +109,21 @@ const MenusScreen = ({ navigation }) => {
                                     <View style={styles.itemInfo}>
                                         <View style={styles.cardHeader}>
                                             <Text style={styles.itemName} numberOfLines={1}>{item.name}</Text>
-                                            <Text style={styles.itemPrice}>Q{item.price}</Text>
+                                            {promotion ? (
+                                                <View style={styles.priceColumn}>
+                                                    <Text style={styles.itemPriceStrike}>Q{promotion.originalPrice}</Text>
+                                                    <Text style={styles.itemPricePromo}>Q{promotion.discountedPrice.toFixed(2)}</Text>
+                                                </View>
+                                            ) : (
+                                                <Text style={styles.itemPrice}>Q{item.price}</Text>
+                                            )}
                                         </View>
+                                        {promotion && (
+                                            <View style={styles.promoBadge}>
+                                                <MaterialIcons name="local-offer" size={12} color={COLORS.surface} />
+                                                <Text style={styles.promoBadgeText}>{promotion.label}</Text>
+                                            </View>
+                                        )}
                                         <Text style={styles.itemDescription} numberOfLines={2}>
                                             {item.description}
                                         </Text>
@@ -114,7 +139,8 @@ const MenusScreen = ({ navigation }) => {
                                 </View>
                             </Card>
                         </TouchableOpacity>
-                    ))
+                        );
+                    })
                 )}
             </ScrollView>
             
@@ -148,6 +174,10 @@ const styles = StyleSheet.create({
         fontSize: FONT_SIZE.md,
         color: COLORS.textLight,
         fontWeight: "500",
+    },
+    headerActions: {
+        flexDirection: "row",
+        gap: SPACING.sm,
     },
     cartButton: {
         padding: SPACING.md,
@@ -231,6 +261,35 @@ const styles = StyleSheet.create({
         fontSize: FONT_SIZE.lg,
         fontWeight: "800",
         color: COLORS.primary,
+    },
+    priceColumn: {
+        alignItems: "flex-end",
+    },
+    itemPriceStrike: {
+        fontSize: FONT_SIZE.sm,
+        color: COLORS.textLight,
+        textDecorationLine: "line-through",
+    },
+    itemPricePromo: {
+        fontSize: FONT_SIZE.lg,
+        fontWeight: "800",
+        color: COLORS.error,
+    },
+    promoBadge: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 4,
+        alignSelf: "flex-start",
+        backgroundColor: COLORS.error,
+        paddingHorizontal: SPACING.sm,
+        paddingVertical: 2,
+        borderRadius: 8,
+        marginBottom: SPACING.sm,
+    },
+    promoBadgeText: {
+        color: COLORS.surface,
+        fontSize: FONT_SIZE.xs,
+        fontWeight: "700",
     },
     itemDescription: {
         fontSize: FONT_SIZE.sm,
