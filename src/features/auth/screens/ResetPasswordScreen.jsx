@@ -8,7 +8,6 @@ import {
     ScrollView,
     Alert,
     TouchableOpacity,
-    TextInput,
     ImageBackground
 } from "react-native"
 
@@ -20,29 +19,40 @@ import { COLORS, SPACING, FONT_SIZE } from "../../../shared/constants/theme"
 
 const fondoCocina = require("../../../../assets/fondo_cocina.png");
 
-const ForgotPasswordScreen = ({ navigation }) => {
-    const { handleRecoverPassword, loading } = useAuth();
+// Acepta tanto el token puro como el enlace completo del correo
+// (ej. https://.../reset-password?token=XYZ) y extrae el token.
+const extractToken = (input) => {
+    const trimmed = (input || "").trim();
+    const match = trimmed.match(/[?&]token=([^&\s]+)/);
+    return match ? decodeURIComponent(match[1]) : trimmed;
+};
 
-    const { control, handleSubmit, formState: { errors } } = useForm({
+const ResetPasswordScreen = ({ navigation }) => {
+    const { handleResetPassword, loading } = useAuth();
+
+    const { control, handleSubmit, watch, formState: { errors } } = useForm({
         defaultValues: {
-            email: ""
+            token: "",
+            newPassword: "",
+            confirmPassword: "",
         }
-    })
+    });
+
+    const newPassword = watch("newPassword");
 
     const onSubmit = async (data) => {
         try {
-            await handleRecoverPassword(data.email)
-            Alert.alert(
-                "Correo enviado",
-                "Si el correo está registrado, recibirás un enlace con un código para restablecer tu contraseña.",
-                [{ text: "Ya tengo el código", onPress: () => navigation.navigate("ResetPassword", { email: data.email }) }]
-            )
+            const token = extractToken(data.token);
+            await handleResetPassword(token, data.newPassword);
+            Alert.alert("Contraseña actualizada", "Ya puedes iniciar sesión con tu nueva contraseña.", [
+                { text: "Iniciar sesión", onPress: () => navigation.navigate("Login") }
+            ]);
         } catch (error) {
             console.error(error);
-            const message = error.response?.data?.message || "Error al procesar la solicitud"
-            Alert.alert("Error", message)
+            const message = error.response?.data?.message || "El código es inválido o ya expiró";
+            Alert.alert("Error", message);
         }
-    }
+    };
 
     return (
         <ImageBackground source={fondoCocina} style={styles.backgroundImage} resizeMode="cover">
@@ -51,45 +61,78 @@ const ForgotPasswordScreen = ({ navigation }) => {
                     behavior={Platform.OS === "ios" ? "padding" : "height"}
                     style={styles.keyboardView}
                 >
-                    <ScrollView 
-                        contentContainerStyle={styles.scrollContent} 
+                    <ScrollView
+                        contentContainerStyle={styles.scrollContent}
                         showsVerticalScrollIndicator={false}
                     >
                         <View style={styles.cardContainer}>
-                            
+
                             <View style={styles.header}>
-                                <Text style={styles.title}>Recuperar cuenta</Text>
+                                <Text style={styles.title}>Restablecer contraseña</Text>
                                 <Text style={styles.subtitle}>
-                                    Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.
+                                    Pega aquí el código o el enlace completo que recibiste por correo, y elige tu nueva contraseña.
                                 </Text>
                             </View>
 
                             <View style={styles.form}>
                                 <Controller
                                     control={control}
+                                    rules={{ required: "El código es requerido" }}
+                                    render={({ field: { onChange, value } }) => (
+                                        <Input
+                                            label="Código o enlace recibido"
+                                            placeholder="Pega aquí el código o el enlace"
+                                            value={value}
+                                            onChangeText={onChange}
+                                            error={errors.token?.message}
+                                            autoCapitalize="none"
+                                        />
+                                    )}
+                                    name="token"
+                                />
+
+                                <Controller
+                                    control={control}
                                     rules={{
-                                        required: "El email es requerido",
-                                        pattern: {
-                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                            message: "Dirección de correo inválida"
-                                        }
+                                        required: "La nueva contraseña es requerida",
+                                        minLength: { value: 6, message: "Debe tener al menos 6 caracteres" }
                                     }}
                                     render={({ field: { onChange, value } }) => (
                                         <Input
-                                            label="Correo electrónico"
-                                            placeholder="correo@ejemplo.com"
+                                            label="Nueva contraseña"
+                                            placeholder="••••••••"
+                                            secureTextEntry
                                             value={value}
                                             onChangeText={onChange}
-                                            error={errors.email?.message}
+                                            error={errors.newPassword?.message}
                                             autoCapitalize="none"
-                                            keyboardType="email-address"
                                         />
                                     )}
-                                    name="email"
+                                    name="newPassword"
+                                />
+
+                                <Controller
+                                    control={control}
+                                    rules={{
+                                        required: "Debes confirmar la nueva contraseña",
+                                        validate: (value) => value === newPassword || "Las contraseñas no coinciden"
+                                    }}
+                                    render={({ field: { onChange, value } }) => (
+                                        <Input
+                                            label="Confirmar nueva contraseña"
+                                            placeholder="••••••••"
+                                            secureTextEntry
+                                            value={value}
+                                            onChangeText={onChange}
+                                            error={errors.confirmPassword?.message}
+                                            autoCapitalize="none"
+                                        />
+                                    )}
+                                    name="confirmPassword"
                                 />
 
                                 <Button
-                                    title={loading ? "Enviando..." : "Enviar enlace"}
+                                    title={loading ? "Actualizando..." : "Restablecer contraseña"}
                                     onPress={handleSubmit(onSubmit)}
                                     loading={loading}
                                 />
@@ -97,20 +140,10 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
                             <View style={styles.footer}>
                                 <TouchableOpacity
-                                    onPress={() => navigation.navigate("ResetPassword")}
-                                    activeOpacity={0.7}
-                                >
-                                    <Text style={styles.registerLink}>Ya tengo un código</Text>
-                                </TouchableOpacity>
-                            </View>
-
-                            <View style={styles.footer}>
-                                <Text style={styles.footerText}>¿Recordaste tu contraseña?</Text>
-                                <TouchableOpacity
                                     onPress={() => navigation.navigate("Login")}
                                     activeOpacity={0.7}
                                 >
-                                    <Text style={styles.registerLink}>Inicia Sesión</Text>
+                                    <Text style={styles.registerLink}>Volver a iniciar sesión</Text>
                                 </TouchableOpacity>
                             </View>
 
@@ -119,8 +152,8 @@ const ForgotPasswordScreen = ({ navigation }) => {
                 </KeyboardAvoidingView>
             </View>
         </ImageBackground>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     backgroundImage: {
@@ -193,4 +226,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ForgotPasswordScreen;
+export default ResetPasswordScreen;

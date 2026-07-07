@@ -45,7 +45,7 @@ export const useAuth = () => {
         try {
             setLoading(true);
             setError(null);
-            
+
             const response = await authClient.post('/verify-email', { token });
             return response.data;
         } catch (err) {
@@ -56,5 +56,44 @@ export const useAuth = () => {
         }
     };
 
-    return { handleLogin, handleRegister, handleVerifyEmail, loading, error, logout };
+    const handleRecoverPassword = async (email) => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const response = await authClient.post('/forgot-password', { email });
+            return response.data;
+        } catch (err) {
+            setError(err.response?.data?.message || "Error al procesar la solicitud");
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleResetPassword = async (token, newPassword) => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const response = await authClient.post('/reset-password', { token, newPassword });
+            return response.data;
+        } catch (err) {
+            setError(err.response?.data?.message || "El código es inválido o ya expiró");
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return {
+        handleLogin,
+        handleRegister,
+        handleVerifyEmail,
+        handleRecoverPassword,
+        handleResetPassword,
+        loading,
+        error,
+        logout,
+    };
 };
