@@ -1,10 +1,12 @@
 // src/features/orders/screens/OrdersScreen.jsx
-import React from "react";
+import React, { useCallback } from "react";
 import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Alert } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useOrders } from "../hooks/useOrders";
 import { Card, LoadingSpinner, EmptyState } from "../../../shared/components/Common";
 import { COLORS, SPACING, FONT_SIZE } from "../../../shared/constants/theme";
+
 
 // Debe calzar exacto con el enum de status del modelo Order en ServerUser/ServerAdmin
 const getStatusColor = (status) => {
@@ -33,6 +35,12 @@ const getStatusText = (status) => {
 
 const OrdersScreen = ({ navigation }) => {
     const { orders, loading, error, refetch, cancelOrder } = useOrders();
+
+    useFocusEffect(
+        useCallback(() => {
+            refetch();
+        }, [refetch])
+    );
 
     if (loading && orders.length === 0) {
         return <LoadingSpinner />;
@@ -77,7 +85,7 @@ const OrdersScreen = ({ navigation }) => {
                     orders.map((order) => (
                         <TouchableOpacity
                             key={order.id}
-                            onPress={() => navigation.navigate("OrderDetail", { orderId: order.id })}
+                            onPress={() => navigation.navigate("OrderDetail", { orderId: order.id, orderData: order })}
                             activeOpacity={0.7}
                         >
                             <Card style={styles.card}>
