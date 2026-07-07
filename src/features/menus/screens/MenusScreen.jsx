@@ -1,9 +1,10 @@
 // src/features/menus/screens/MenusScreen.jsx
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Image, Alert } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useMenus } from "../hooks/useMenus";
 import { useBranchStore } from "../../branches/store/branchStore";
+import { useCartStore } from "../store/cartStore";
 import { Card, LoadingSpinner, EmptyState } from "../../../shared/components/Common";
 import { COLORS, SPACING, FONT_SIZE } from "../../../shared/constants/theme";
 import { getActivePromotion } from "../../../shared/utils/pricing.js";
@@ -16,6 +17,8 @@ const MenusScreen = ({ navigation }) => {
     const { selectedBranch } = useBranchStore();
     const branchId = selectedBranch?._id || selectedBranch?.id;
     const { menus, loading, error, refetch } = useMenus(branchId);
+    const { addItem, getItemCount } = useCartStore();
+    const itemCount = getItemCount();
     const [selectedCategory, setSelectedCategory] = useState("Todos");
     const [cartVisible, setCartVisible] = useState(false);
 
@@ -58,11 +61,16 @@ const MenusScreen = ({ navigation }) => {
                         <MaterialIcons name="star-rate" size={24} color={COLORS.primary} />
                     </TouchableOpacity>
                     <TouchableOpacity
-                        style={styles.cartButton}
+                        style={[styles.cartButton, { position: "relative" }]}
                         onPress={() => setCartVisible(true)}
                         activeOpacity={0.7}
                     >
                         <MaterialIcons name="shopping-cart" size={24} color={COLORS.primary} />
+                        {itemCount > 0 && (
+                            <View style={styles.badge}>
+                                <Text style={styles.badgeText}>{itemCount}</Text>
+                            </View>
+                        )}
                     </TouchableOpacity>
                 </View>
             </View>
@@ -142,7 +150,15 @@ const MenusScreen = ({ navigation }) => {
                                             <View style={styles.categoryBadge}>
                                                 <Text style={styles.categoryBadgeText}>{item.category}</Text>
                                             </View>
-                                            <TouchableOpacity style={styles.addButton}>
+                                            <TouchableOpacity
+                                                style={styles.addButton}
+                                                onPress={() => {
+                                                    const promo = getActivePromotion(item);
+                                                    const priceToUse = promo ? promo.discountedPrice : item.price;
+                                                    addItem({ ...item, price: priceToUse }, branchId);
+                                                    Alert.alert("Agregado al carrito", `${item.name} ha sido agregado a tu orden.`);
+                                                }}
+                                            >
                                                 <MaterialIcons name="add" size={20} color={COLORS.surface} />
                                             </TouchableOpacity>
                                         </View>
@@ -155,7 +171,7 @@ const MenusScreen = ({ navigation }) => {
                 )}
             </ScrollView>
             
-            <CartModal visible={cartVisible} onClose={() => setCartVisible(false)} />
+            <CartModal visible={cartVisible} onClose={() => setCartVisible(false)} navigation={navigation} />
         </View>
     );
 };
@@ -199,6 +215,23 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 2,
+    },
+    badge: {
+        position: "absolute",
+        top: -4,
+        right: -4,
+        backgroundColor: COLORS.error,
+        borderRadius: 10,
+        minWidth: 20,
+        height: 20,
+        justifyContent: "center",
+        alignItems: "center",
+        paddingHorizontal: 4,
+    },
+    badgeText: {
+        color: COLORS.surface,
+        fontSize: 10,
+        fontWeight: "bold",
     },
     categoriesContainer: {
         backgroundColor: COLORS.surface,
