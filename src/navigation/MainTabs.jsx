@@ -8,6 +8,8 @@ import { COLORS, SPACING, FONT_SIZE } from "../shared/constants/theme";
 import { MaterialIcons } from "@expo/vector-icons";
 
 // Screen imports
+import BranchesScreen from "../features/branches/screens/BranchesScreen";
+import BranchDetailScreen from "../features/branches/screens/BranchDetailScreen";
 import MenusScreen from "../features/menus/screens/MenusScreen";
 import TablesScreen from "../features/tables/screens/TablesScreen";
 import OrdersScreen from "../features/orders/screens/OrdersScreen";
@@ -28,6 +30,17 @@ const PlaceholderScreen = ({ title }) => (
 );
 
 // Stacks for nested navigation
+const BranchesStack = () => (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="BranchesList" component={BranchesScreen} />
+        <Stack.Screen
+            name="BranchDetail"
+            component={BranchDetailScreen}
+            options={{ headerShown: true, title: "Detalle" }}
+        />
+    </Stack.Navigator>
+);
+
 const MenusStack = () => (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="MenusList" component={MenusScreen} />
@@ -98,7 +111,8 @@ const MainTabs = () => {
                 },
                 tabBarIcon: ({ color, size }) => {
                     let iconName;
-                    if (route.name === "Menus") iconName = "menu-book";
+                    if (route.name === "Restaurantes") iconName = "storefront";
+                    else if (route.name === "Menus") iconName = "menu-book";
                     else if (route.name === "Mesas") iconName = "table-restaurant";
                     else if (route.name === "Ordenes") iconName = "event-note";
                     else if (route.name === "Facturas") iconName = "receipt-long";
@@ -108,6 +122,11 @@ const MainTabs = () => {
                 },
             })}
         >
+            <Tab.Screen
+                name="Restaurantes"
+                component={BranchesStack}
+                options={{ title: "Restaurantes" }}
+            />
             <Tab.Screen
                 name="Menus"
                 component={MenusStack}

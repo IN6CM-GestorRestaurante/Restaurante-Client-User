@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Image } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useMenus } from "../hooks/useMenus";
+import { useBranchStore } from "../../branches/store/branchStore";
 import { Card, LoadingSpinner, EmptyState } from "../../../shared/components/Common";
 import { COLORS, SPACING, FONT_SIZE } from "../../../shared/constants/theme";
 import { getActivePromotion } from "../../../shared/utils/pricing.js";
@@ -12,7 +13,9 @@ import CartModal from "../components/CartModal";
 const CATEGORIES = ["Todos", "Entrada", "Plato Fuerte", "Acompañamiento", "Bebida", "Postre", "Otro"];
 
 const MenusScreen = ({ navigation }) => {
-    const { menus, loading, error, refetch } = useMenus();
+    const { selectedBranch } = useBranchStore();
+    const branchId = selectedBranch?._id || selectedBranch?.id;
+    const { menus, loading, error, refetch } = useMenus(branchId);
     const [selectedCategory, setSelectedCategory] = useState("Todos");
     const [cartVisible, setCartVisible] = useState(false);
 
@@ -31,12 +34,20 @@ const MenusScreen = ({ navigation }) => {
         return <LoadingSpinner />;
     }
 
+    if (!selectedBranch) {
+        return (
+            <View style={styles.container}>
+                <EmptyState message="Selecciona un restaurante primero desde la pestaña Restaurantes" />
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <View>
                     <Text style={styles.title}>Menú</Text>
-                    <Text style={styles.subtitle}>Nuestros platillos</Text>
+                    <Text style={styles.subtitle}>{selectedBranch.name}</Text>
                 </View>
                 <View style={styles.headerActions}>
                     <TouchableOpacity

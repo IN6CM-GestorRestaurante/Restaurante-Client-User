@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, RefreshControl, Alert, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useReviews } from "../hooks/useReviews";
-import { useDefaultBranch } from "../../../shared/hooks/useDefaultBranch";
+import { useBranchStore } from "../../branches/store/branchStore";
 import { Card, LoadingSpinner, EmptyState } from "../../../shared/components/Common";
 import Input from "../../../shared/components/Input";
 import Button from "../../../shared/components/Button";
@@ -11,7 +11,7 @@ import StarRating from "../components/StarRating";
 import { COLORS, SPACING, FONT_SIZE } from "../../../shared/constants/theme";
 
 const ReviewsScreen = () => {
-    const { branch } = useDefaultBranch();
+    const { selectedBranch: branch } = useBranchStore();
     const branchId = branch?._id || branch?.id;
     const {
         reviews,
@@ -80,6 +80,14 @@ const ReviewsScreen = () => {
 
     if (loading && reviews.length === 0) {
         return <LoadingSpinner />;
+    }
+
+    if (!branch) {
+        return (
+            <View style={styles.container}>
+                <EmptyState message="Selecciona un restaurante primero desde la pestaña Restaurantes" />
+            </View>
+        );
     }
 
     const showForm = !myReview || editing;

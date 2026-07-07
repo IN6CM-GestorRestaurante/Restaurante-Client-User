@@ -13,7 +13,7 @@ const mapMenuItem = (m) => ({
     promotion: m.promotion,
 });
 
-export const useMenus = () => {
+export const useMenus = (branchId) => {
     const [menus, setMenus] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -23,7 +23,9 @@ export const useMenus = () => {
             setLoading(true);
             setError(null);
 
-            const response = await userClient.get("/menus", { params: { limit: 100 } });
+            const response = branchId
+                ? await userClient.get(`/menus/branch/${branchId}`, { params: { limit: 100 } })
+                : await userClient.get("/menus", { params: { limit: 100 } });
             const raw = response.data?.data ?? [];
             setMenus(Array.isArray(raw) ? raw.map(mapMenuItem) : []);
         } catch (err) {
@@ -33,7 +35,7 @@ export const useMenus = () => {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [branchId]);
 
     useEffect(() => {
         fetchMenus();

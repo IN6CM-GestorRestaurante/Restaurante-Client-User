@@ -3,16 +3,24 @@ import React from "react";
 import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTables } from "../hooks/useTables";
-import { useDefaultBranch } from "../../../shared/hooks/useDefaultBranch";
+import { useBranchStore } from "../../branches/store/branchStore";
 import { Card, LoadingSpinner, EmptyState } from "../../../shared/components/Common";
 import { COLORS, SPACING, FONT_SIZE } from "../../../shared/constants/theme";
 
 const TablesScreen = ({ navigation }) => {
-    const { branch, loading: loadingBranch } = useDefaultBranch();
+    const { selectedBranch: branch, loading: loadingBranch } = useBranchStore();
     const { tables, loading, error, refetch } = useTables(branch?._id || branch?.id);
 
     if ((loading || loadingBranch) && tables.length === 0) {
         return <LoadingSpinner />;
+    }
+
+    if (!branch) {
+        return (
+            <View style={styles.container}>
+                <EmptyState message="Selecciona un restaurante primero desde la pestaña Restaurantes" />
+            </View>
+        );
     }
 
     return (
