@@ -13,6 +13,8 @@ import TablesScreen from "../features/tables/screens/TablesScreen";
 import OrdersScreen from "../features/orders/screens/OrdersScreen";
 import BillsScreen from "../features/bills/screens/BillsScreen";
 import ProfileScreen from "../features/profile/screens/ProfileScreen";
+import CreateReservationScreen from "../features/reservations/screens/CreateReservationScreen";
+import MyReservationsScreen from "../features/reservations/screens/MyReservationsScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -38,13 +40,11 @@ const MenusStack = () => (
 const TablesStack = () => (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="TablesList" component={TablesScreen} />
-        <Stack.Screen 
-            name="TableDetail" 
-            component={() => <PlaceholderScreen title="Detalle de Mesa" />}
-        />
-        <Stack.Screen 
-            name="CreateReservation" 
-            component={() => <PlaceholderScreen title="Crear Reserva" />}
+        <Stack.Screen name="CreateReservation" component={CreateReservationScreen} />
+        <Stack.Screen
+            name="MyReservations"
+            component={MyReservationsScreen}
+            options={{ headerShown: true, title: "Mis Reservaciones" }}
         />
     </Stack.Navigator>
 );

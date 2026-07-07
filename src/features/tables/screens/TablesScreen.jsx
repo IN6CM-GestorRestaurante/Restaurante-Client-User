@@ -3,21 +3,34 @@ import React from "react";
 import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTables } from "../hooks/useTables";
+import { useDefaultBranch } from "../../../shared/hooks/useDefaultBranch";
 import { Card, LoadingSpinner, EmptyState } from "../../../shared/components/Common";
 import { COLORS, SPACING, FONT_SIZE } from "../../../shared/constants/theme";
 
 const TablesScreen = ({ navigation }) => {
-    const { tables, loading, error, refetch } = useTables();
+    const { branch, loading: loadingBranch } = useDefaultBranch();
+    const { tables, loading, error, refetch } = useTables(branch?._id || branch?.id);
 
-    if (loading && tables.length === 0) {
+    if ((loading || loadingBranch) && tables.length === 0) {
         return <LoadingSpinner />;
     }
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.title}>Mesas</Text>
-                <Text style={styles.subtitle}>Selecciona una mesa para reservar</Text>
+                <View style={styles.headerTop}>
+                    <View>
+                        <Text style={styles.title}>Mesas</Text>
+                        <Text style={styles.subtitle}>Selecciona una mesa para reservar</Text>
+                    </View>
+                    <TouchableOpacity
+                        style={styles.historyButton}
+                        onPress={() => navigation.navigate("MyReservations")}
+                        activeOpacity={0.7}
+                    >
+                        <MaterialIcons name="event-note" size={22} color={COLORS.primary} />
+                    </TouchableOpacity>
+                </View>
             </View>
 
             <ScrollView
@@ -35,7 +48,11 @@ const TablesScreen = ({ navigation }) => {
                     tables.map((table) => (
                         <TouchableOpacity
                             key={table.id}
-                            onPress={() => navigation.navigate("TableDetail", { tableId: table.id })}
+                            onPress={() => navigation.navigate("CreateReservation", {
+                                tableId: table.id,
+                                tableNumber: table.number,
+                                branchId: branch?._id || branch?.id,
+                            })}
                             activeOpacity={0.7}
                         >
                             <Card style={styles.card}>
@@ -77,6 +94,16 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.surface,
         borderBottomWidth: 1,
         borderBottomColor: COLORS.border,
+    },
+    headerTop: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+    historyButton: {
+        padding: SPACING.md,
+        borderRadius: 16,
+        backgroundColor: COLORS.surfaceVariant,
     },
     title: {
         fontSize: FONT_SIZE.huge,
