@@ -1,6 +1,7 @@
 // src/features/auth/screens/LoginScreen.jsx
-import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Image } from "react-native";
 import { useForm, Controller } from "react-hook-form";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useAuth } from "../hooks/useAuth";
 import Input from "../../../shared/components/Input";
 import Button from "../../../shared/components/Button";
@@ -29,69 +30,72 @@ const LoginScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Image 
-                    source={require("../../../../assets/icon.png")} 
-                    style={styles.logo}
-                    resizeMode="contain"
-                />
-                <Text style={styles.title}>Gestor Restaurante</Text>
-                <Text style={styles.subtitle}>Inicia sesión para continuar</Text>
+                <View style={styles.logoContainer}>
+                    <Image 
+                        source={require("../../../../assets/icon.png")} 
+                        style={styles.logoImage}
+                        resizeMode="contain"
+                    />
+                </View>
             </View>
 
-            <View style={styles.form}>
-                <Controller
-                    control={control}
-                    rules={{ required: "Este campo es requerido" }}
-                    render={({ field: { onChange, value } }) => (
-                        <Input
-                            label="Correo o usuario"
-                            placeholder="ejemplo@restaurante.com"
-                            value={value}
-                            onChangeText={onChange}
-                            error={errors.emailOrUsername?.message}
-                            autoCapitalize="none"
-                            keyboardType="email-address"
-                        />
-                    )}
-                    name="emailOrUsername"
-                />
+            <View style={styles.cardBox}>
+                <Text style={styles.title}>Iniciar sesión</Text>
+                <View style={styles.form}>
+                    <Controller
+                        control={control}
+                        rules={{ required: "Este campo es requerido" }}
+                        render={({ field: { onChange, value } }) => (
+                            <Input
+                                placeholder="Username o Correo"
+                                value={value}
+                                onChangeText={onChange}
+                                error={errors.emailOrUsername?.message}
+                                autoCapitalize="none"
+                                keyboardType="email-address"
+                                iconName="person-outline"
+                            />
+                        )}
+                        name="emailOrUsername"
+                    />
 
-                <Controller
-                    control={control}
-                    rules={{ required: "La contraseña es requerida" }}
-                    render={({ field: { onChange, value } }) => (
-                        <Input
-                            label="Contraseña"
-                            placeholder="••••••••"
-                            value={value}
-                            onChangeText={onChange}
-                            error={errors.password?.message}
-                            secureTextEntry
-                            autoCapitalize="none"
-                        />
-                    )}
-                    name="password"
-                />
+                    <Controller
+                        control={control}
+                        rules={{ required: "La contraseña es requerida" }}
+                        render={({ field: { onChange, value } }) => (
+                            <Input
+                                placeholder="Contraseña"
+                                value={value}
+                                onChangeText={onChange}
+                                error={errors.password?.message}
+                                secureTextEntry
+                                autoCapitalize="none"
+                                iconName="lock-outline"
+                            />
+                        )}
+                        name="password"
+                    />
 
-                <Button
-                    title="Iniciar Sesión"
-                    onPress={handleSubmit(onSubmit)}
-                    loading={loading}
-                />
+                    <TouchableOpacity 
+                        style={styles.forgotPassword}
+                        onPress={() => navigation.navigate("Restore")}
+                        activeOpacity={0.7}
+                    >
+                        <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity 
-                    style={styles.forgotPassword}
-                    onPress={() => navigation.navigate("Restore")}
-                    activeOpacity={0.7}
-                >
-                    <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
-                </TouchableOpacity>
+                    <Button
+                        title="Submit"
+                        onPress={handleSubmit(onSubmit)}
+                        loading={loading}
+                    />
+                </View>
             </View>
 
             <View style={styles.footer}>
                 <Text style={styles.footerText}>¿No tienes una cuenta?</Text>
                 <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-                    <Text style={styles.link}>Regístrate</Text>
+                    <Text style={styles.link}>Regístrate aquí</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -109,54 +113,64 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginBottom: SPACING.xxl,
     },
-    logo: {
+    logoContainer: {
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    logoImage: {
         width: 100,
         height: 100,
-        marginBottom: SPACING.lg,
         borderRadius: 50,
         backgroundColor: COLORS.surfaceVariant,
         padding: SPACING.md,
     },
-    title: {
-        fontSize: FONT_SIZE.huge,
-        fontWeight: "800",
+    logoText: {
+        fontSize: FONT_SIZE.lg,
+        fontWeight: "bold",
         color: COLORS.primary,
-        marginBottom: SPACING.xs,
-        letterSpacing: 0.5,
+        marginTop: SPACING.xs,
     },
-    subtitle: {
-        fontSize: FONT_SIZE.md,
-        color: COLORS.textLight,
+    cardBox: {
+        backgroundColor: "transparent",
+        borderWidth: 1,
+        borderColor: COLORS.border,
+        borderRadius: 8,
+        padding: SPACING.xl,
+        marginBottom: SPACING.xl,
+    },
+    title: {
+        fontSize: FONT_SIZE.xl,
+        fontWeight: "600",
+        color: COLORS.text,
+        marginBottom: SPACING.xl,
         textAlign: "center",
-        fontWeight: "500",
     },
     form: {
-        marginBottom: SPACING.xl,
+        width: "100%",
     },
     forgotPassword: {
         alignItems: "center",
-        marginTop: SPACING.md,
+        marginBottom: SPACING.lg,
+        marginTop: SPACING.sm,
     },
     forgotPasswordText: {
         fontSize: FONT_SIZE.sm,
-        fontWeight: "600",
-        color: COLORS.primary,
+        color: COLORS.text,
     },
     footer: {
-        alignItems: "center",
         flexDirection: "row",
         justifyContent: "center",
         marginTop: SPACING.lg,
     },
     footerText: {
-        fontSize: FONT_SIZE.md,
+        fontSize: FONT_SIZE.sm,
         color: COLORS.textLight,
         marginRight: SPACING.xs,
     },
     link: {
-        fontSize: FONT_SIZE.md,
-        fontWeight: "700",
-        color: COLORS.primary,
+        fontSize: FONT_SIZE.sm,
+        fontWeight: "bold",
+        color: COLORS.text,
     },
 });
 

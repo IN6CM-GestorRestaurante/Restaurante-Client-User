@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuthStore } from "../../../shared/store/authStore.js";
+import authClient from "../../../shared/api/authClient.js";
 
 export const useAuth = () => {
     const [loading, setLoading] = useState(false);
@@ -12,28 +13,13 @@ export const useAuth = () => {
             setLoading(true);
             setError(null);
             
-            // Simular delay de red
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            const response = await authClient.post('/login', data);
+            const { accessToken, refreshToken, userDetails } = response.data;
             
-            // Datos mock para login
-            const mockResponse = {
-                accessToken: "mock_access_token_" + Date.now(),
-                refreshToken: "mock_refresh_token_" + Date.now(),
-                user: {
-                    id: "mock_user_1",
-                    username: data.emailOrUsername,
-                    email: data.emailOrUsername,
-                    name: "Usuario",
-                    surname: "Demo",
-                    phone: "+502 1234 5678",
-                    displayName: "Usuario Demo"
-                }
-            };
-            
-            await login(mockResponse.accessToken, mockResponse.user, mockResponse.refreshToken);
-            return mockResponse;
+            await login(accessToken, userDetails, refreshToken);
+            return response.data;
         } catch (err) {
-            setError("Error al iniciar sesión");
+            setError(err.response?.data?.message || "Error al iniciar sesión");
             throw err;
         } finally {
             setLoading(false);
@@ -45,21 +31,30 @@ export const useAuth = () => {
             setLoading(true);
             setError(null);
             
-            // Simular delay de red
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            // Datos mock para registro
-            return {
-                success: true,
-                message: "Registro exitoso"
-            };
+            const response = await authClient.post('/register', data);
+            return response.data;
         } catch (err) {
-            setError("Error al registrarse");
+            setError(err.response?.data?.message || "Error al registrarse");
             throw err;
         } finally {
             setLoading(false);
         }
     };
 
-    return { handleLogin, handleRegister, loading, error, logout };
+    const handleVerifyEmail = async (token) => {
+        try {
+            setLoading(true);
+            setError(null);
+            
+            const response = await authClient.post('/verify-email', { token });
+            return response.data;
+        } catch (err) {
+            setError(err.response?.data?.message || "Código inválido o expirado");
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return { handleLogin, handleRegister, handleVerifyEmail, loading, error, logout };
 };
