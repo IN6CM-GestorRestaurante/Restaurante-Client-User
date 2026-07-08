@@ -16,7 +16,7 @@ const STATUS_COLORS = {
 
 const CANCELLABLE_STATUSES = ["Pendiente", "Confirmada", "En curso"];
 
-const MyReservationsScreen = () => {
+const MyReservationsScreen = ({ navigation }) => {
     const { reservations, loading, error, refetch, cancelReservation } = useReservations();
 
     const handleCancel = (reservation) => {
@@ -43,7 +43,17 @@ const MyReservationsScreen = () => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.title}>Mis Reservaciones</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: SPACING.md }}>
+                    <TouchableOpacity onPress={() => navigation.openDrawer && navigation.openDrawer()} activeOpacity={0.7}>
+                        <MaterialIcons name="menu" size={32} color={COLORS.primary} />
+                    </TouchableOpacity>
+                    {navigation.canGoBack() && (
+                        <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.7}>
+                            <MaterialIcons name="arrow-back" size={28} color={COLORS.primary} />
+                        </TouchableOpacity>
+                    )}
+                    <Text style={styles.title}>Mis Reservaciones</Text>
+                </View>
             </View>
 
             <ScrollView

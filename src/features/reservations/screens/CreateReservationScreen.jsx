@@ -1,5 +1,5 @@
 // src/features/reservations/screens/CreateReservationScreen.jsx
-import React, { useState } from "react";
+import React, { useState, createElement } from "react";
 import { View, Text, StyleSheet, ScrollView, Alert, Platform, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -67,46 +67,105 @@ const CreateReservationScreen = ({ route, navigation }) => {
 
             <Card style={styles.section}>
                 <Text style={styles.label}>Fecha</Text>
-                <TouchableOpacity style={styles.pickerButton} onPress={() => setShowDatePicker(true)}>
-                    <MaterialIcons name="calendar-today" size={20} color={COLORS.primary} />
-                    <Text style={styles.pickerText}>{date.toLocaleDateString("es-GT")}</Text>
-                </TouchableOpacity>
-                {showDatePicker && (
-                    <DateTimePicker
-                        value={date}
-                        mode="date"
-                        minimumDate={new Date()}
-                        onChange={(event, selected) => {
-                            setShowDatePicker(Platform.OS === "ios");
-                            if (selected) {
-                                const updated = new Date(date);
-                                updated.setFullYear(selected.getFullYear(), selected.getMonth(), selected.getDate());
-                                setDate(updated);
+                {Platform.OS === "web" ? (
+                    createElement("input", {
+                        type: "date",
+                        value: date.toISOString().split("T")[0],
+                        min: new Date().toISOString().split("T")[0],
+                        onChange: (e) => {
+                            const val = e.target.value;
+                            if (val) {
+                                const newDate = new Date(date);
+                                const [y, m, d] = val.split("-");
+                                newDate.setFullYear(y, m - 1, d);
+                                setDate(newDate);
                             }
-                        }}
-                    />
+                        },
+                        style: {
+                            padding: "12px 16px",
+                            fontSize: "16px",
+                            borderRadius: "50px",
+                            border: "1px solid #E2E8F0",
+                            width: "100%",
+                            marginBottom: "16px",
+                            outline: "none",
+                            color: "#1E293B",
+                            fontFamily: "inherit",
+                        }
+                    })
+                ) : (
+                    <>
+                        <TouchableOpacity style={styles.pickerButton} onPress={() => setShowDatePicker(true)}>
+                            <MaterialIcons name="calendar-today" size={20} color={COLORS.primary} />
+                            <Text style={styles.pickerText}>{date.toLocaleDateString("es-GT")}</Text>
+                        </TouchableOpacity>
+                        {showDatePicker && (
+                            <DateTimePicker
+                                value={date}
+                                mode="date"
+                                minimumDate={new Date()}
+                                onChange={(event, selected) => {
+                                    setShowDatePicker(Platform.OS === "ios");
+                                    if (selected) {
+                                        const updated = new Date(date);
+                                        updated.setFullYear(selected.getFullYear(), selected.getMonth(), selected.getDate());
+                                        setDate(updated);
+                                    }
+                                }}
+                            />
+                        )}
+                    </>
                 )}
 
                 <Text style={styles.label}>Hora</Text>
-                <TouchableOpacity style={styles.pickerButton} onPress={() => setShowTimePicker(true)}>
-                    <MaterialIcons name="access-time" size={20} color={COLORS.primary} />
-                    <Text style={styles.pickerText}>
-                        {date.toLocaleTimeString("es-GT", { hour: "2-digit", minute: "2-digit" })}
-                    </Text>
-                </TouchableOpacity>
-                {showTimePicker && (
-                    <DateTimePicker
-                        value={date}
-                        mode="time"
-                        onChange={(event, selected) => {
-                            setShowTimePicker(Platform.OS === "ios");
-                            if (selected) {
-                                const updated = new Date(date);
-                                updated.setHours(selected.getHours(), selected.getMinutes());
-                                setDate(updated);
+                {Platform.OS === "web" ? (
+                    createElement("input", {
+                        type: "time",
+                        value: date.toTimeString().substring(0, 5),
+                        onChange: (e) => {
+                            const val = e.target.value;
+                            if (val) {
+                                const newDate = new Date(date);
+                                const [h, min] = val.split(":");
+                                newDate.setHours(h, min);
+                                setDate(newDate);
                             }
-                        }}
-                    />
+                        },
+                        style: {
+                            padding: "12px 16px",
+                            fontSize: "16px",
+                            borderRadius: "50px",
+                            border: "1px solid #E2E8F0",
+                            width: "100%",
+                            marginBottom: "16px",
+                            outline: "none",
+                            color: "#1E293B",
+                            fontFamily: "inherit",
+                        }
+                    })
+                ) : (
+                    <>
+                        <TouchableOpacity style={styles.pickerButton} onPress={() => setShowTimePicker(true)}>
+                            <MaterialIcons name="access-time" size={20} color={COLORS.primary} />
+                            <Text style={styles.pickerText}>
+                                {date.toLocaleTimeString("es-GT", { hour: "2-digit", minute: "2-digit" })}
+                            </Text>
+                        </TouchableOpacity>
+                        {showTimePicker && (
+                            <DateTimePicker
+                                value={date}
+                                mode="time"
+                                onChange={(event, selected) => {
+                                    setShowTimePicker(Platform.OS === "ios");
+                                    if (selected) {
+                                        const updated = new Date(date);
+                                        updated.setHours(selected.getHours(), selected.getMinutes());
+                                        setDate(updated);
+                                    }
+                                }}
+                            />
+                        )}
+                    </>
                 )}
 
                 <Input
