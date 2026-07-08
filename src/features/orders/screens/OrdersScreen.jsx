@@ -66,7 +66,17 @@ const OrdersScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.title}>Órdenes</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: SPACING.md, marginBottom: SPACING.xs }}>
+                    <TouchableOpacity onPress={() => navigation.openDrawer && navigation.openDrawer()} activeOpacity={0.7}>
+                        <MaterialIcons name="menu" size={32} color={COLORS.primary} />
+                    </TouchableOpacity>
+                    {navigation.canGoBack() && (
+                        <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.7}>
+                            <MaterialIcons name="arrow-back" size={28} color={COLORS.primary} />
+                        </TouchableOpacity>
+                    )}
+                    <Text style={[styles.title, { marginBottom: 0 }]}>Órdenes</Text>
+                </View>
                 <Text style={styles.subtitle}>Historial de tus órdenes</Text>
             </View>
 
