@@ -33,7 +33,17 @@ const BranchesScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.title}>Restaurantes</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: SPACING.md, marginBottom: SPACING.xs }}>
+                    <TouchableOpacity onPress={() => navigation.openDrawer && navigation.openDrawer()} activeOpacity={0.7}>
+                        <MaterialIcons name="menu" size={32} color={COLORS.primary} />
+                    </TouchableOpacity>
+                    {navigation.canGoBack() && (
+                        <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.7}>
+                            <MaterialIcons name="arrow-back" size={28} color={COLORS.primary} />
+                        </TouchableOpacity>
+                    )}
+                    <Text style={styles.title}>Restaurantes</Text>
+                </View>
                 <Text style={styles.subtitle}>Elige dónde quieres comer hoy</Text>
                 <Input
                     placeholder="Buscar por nombre, categoría o dirección..."
@@ -55,43 +65,43 @@ const BranchesScreen = ({ navigation }) => {
                     branches.map((branch) => {
                         const isSelected = (selectedBranch?._id || selectedBranch?.id) === branch._id;
                         return (
-                            <TouchableOpacity
-                                key={branch._id}
-                                onPress={() => navigation.navigate("BranchDetail", { branchId: branch._id })}
-                                activeOpacity={0.7}
-                            >
-                                <Card style={[styles.card, isSelected && styles.cardSelected]}>
-                                    <View style={styles.cardContent}>
-                                        <Image source={getImageSource(branch.photos)} style={styles.branchImage} />
-                                        <View style={styles.branchInfo}>
-                                            <Text style={styles.branchName} numberOfLines={1}>{branch.name}</Text>
-                                            <View style={styles.infoRow}>
-                                                <MaterialIcons name="restaurant" size={14} color={COLORS.secondary} />
-                                                <Text style={styles.infoText}>{branch.category}</Text>
-                                            </View>
-                                            <View style={styles.infoRow}>
-                                                <MaterialIcons name="location-on" size={14} color={COLORS.secondary} />
-                                                <Text style={styles.infoText} numberOfLines={1}>{branch.address}</Text>
-                                            </View>
-                                            <View style={styles.infoRow}>
-                                                <MaterialIcons name="schedule" size={14} color={COLORS.secondary} />
-                                                <Text style={styles.infoText}>{branch.openingTime} - {branch.closingTime}</Text>
-                                            </View>
-                                        </View>
-                                        {isSelected && (
-                                            <MaterialIcons name="check-circle" size={22} color={COLORS.success} />
-                                        )}
-                                    </View>
+                                <Card key={branch._id} style={[styles.card, isSelected && styles.cardSelected]}>
                                     <TouchableOpacity
-                                        style={[styles.selectButton, isSelected && styles.selectButtonActive]}
-                                        onPress={() => setSelectedBranch(branch)}
+                                        onPress={() => {
+                                            setSelectedBranch(branch);
+                                            navigation.navigate("BranchDetail", { branchId: branch._id });
+                                        }}
+                                        activeOpacity={0.9}
                                     >
-                                        <Text style={[styles.selectButtonText, isSelected && styles.selectButtonTextActive]}>
-                                            {isSelected ? "Seleccionado" : "Elegir esta sucursal"}
-                                        </Text>
+                                        <View style={styles.cardContent}>
+                                            <Image source={getImageSource(branch.photos)} style={styles.branchImage} />
+                                            <View style={styles.branchInfo}>
+                                                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 2 }}>
+                                                    <Text style={[styles.branchName, { flex: 1 }]} numberOfLines={1}>{branch.name}</Text>
+                                                    <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: COLORS.surfaceVariant, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8, marginLeft: 8 }}>
+                                                        <Text style={{ fontSize: FONT_SIZE.xs, fontWeight: "bold", color: COLORS.text, marginRight: 2 }}>{branch.rating > 0 ? branch.rating.toFixed(1) : "Nuevo"}</Text>
+                                                        <MaterialIcons name="star" size={12} color={COLORS.primary} />
+                                                    </View>
+                                                </View>
+                                                <View style={styles.infoRow}>
+                                                    <MaterialIcons name="restaurant" size={14} color={COLORS.secondary} />
+                                                    <Text style={styles.infoText}>{branch.category}</Text>
+                                                </View>
+                                                <View style={styles.infoRow}>
+                                                    <MaterialIcons name="location-on" size={14} color={COLORS.secondary} />
+                                                    <Text style={styles.infoText} numberOfLines={1}>{branch.address}</Text>
+                                                </View>
+                                                <View style={styles.infoRow}>
+                                                    <MaterialIcons name="schedule" size={14} color={COLORS.secondary} />
+                                                    <Text style={styles.infoText}>{branch.openingTime} - {branch.closingTime}</Text>
+                                                </View>
+                                            </View>
+                                            {isSelected && (
+                                                <MaterialIcons name="check-circle" size={22} color={COLORS.success} />
+                                            )}
+                                        </View>
                                     </TouchableOpacity>
                                 </Card>
-                            </TouchableOpacity>
                         );
                     })
                 )}
