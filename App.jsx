@@ -1,4 +1,5 @@
 // App.jsx
+import "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { COLORS } from "./src/shared/constants/theme.js";
